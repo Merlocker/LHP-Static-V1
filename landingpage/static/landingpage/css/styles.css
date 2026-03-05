@@ -199,7 +199,18 @@ section {
   .nav-cta{display:none;}
   @media(min-width:640px){.nav-cta{display:inline-flex;padding:10px 22px;font-size:.9rem;}}
 
-
+  /* ── FOOTER ── */
+  footer{background:var(--dark);padding:48px 0 24px;}
+  .footer-grid{display:grid;gap:36px;margin-bottom:40px;}
+  @media(min-width:768px){.footer-grid{grid-template-columns:2fr 1fr 1fr;}}
+  .footer-brand p{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.65;max-width:280px;margin-top:12px;}
+  .footer-col h4{color:var(--white);font-size:.9rem;font-weight:800;margin-bottom:14px;letter-spacing:.04em;}
+  .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .footer-col ul li a{color:rgba(255,255,255,.55);font-size:.88rem;transition:var(--trans);}
+  .footer-col ul li a:hover{color:var(--blue-light);}
+  .service-areas{color:rgba(255,255,255,.55);font-size:.82rem;line-height:1.7;}
+  .footer-bottom{border-top:1px solid rgba(196,181,253,.1);padding-top:20px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;}
+  .footer-bottom p{color:rgba(255,255,255,.35);font-size:.8rem;}
 
 
     /* ── HERO ── */
