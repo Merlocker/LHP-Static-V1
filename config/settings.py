@@ -10,23 +10,56 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from decouple import config, Csv
-
 import os
 from pathlib import Path
+from decouple import Config, Csv
+from decouple import UndefinedValueError
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ------------------------
+# Decide config source
+# ------------------------
+# If DEBUG is True (development), load from .env
+# If DEBUG is False (production), load from os.environ
+def get_config(key, default=None, cast=str):
+    """
+    Reads key from .env if DEBUG=True, otherwise from os.environ
+    """
+    # First, try .env via Decouple
+    config_dev = Config(repository=os.path.join(BASE_DIR, '.env'))
+    try:
+        return config_dev(key, default=default, cast=cast)
+    except UndefinedValueError:
+        # fallback to environment variable
+        return os.environ.get(key, default)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# ------------------------
+# DEBUG flag
+# ------------------------
+DEBUG = get_config('DJANGO_DEBUG', default=True, cast=bool)
 
-SECRET_KEY = config('DJANGO_SECRET_KEY')
-DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
+# ------------------------
+# SECRET_KEY
+# ------------------------
+if DEBUG:
+    # Dev: read from .env, fallback default
+    SECRET_KEY = get_config('DJANGO_SECRET_KEY', default='dev-secret-key-for-local')
+else:
+    # Prod: must be set as environment variable
+    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+    if not SECRET_KEY:
+        raise RuntimeError("DJANGO_SECRET_KEY environment variable not set in production!")
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='lotushomeprojects.com', cast=Csv())
-
+# ------------------------
+# Allowed Hosts
+# ------------------------
+if DEBUG:
+    ALLOWED_HOSTS = get_config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+else:
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+    if not ALLOWED_HOSTS:
+        raise RuntimeError("ALLOWED_HOSTS environment variable not set in production!")
 
 # Application definition
 
